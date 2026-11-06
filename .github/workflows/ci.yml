@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Byte-compile all scripts
+        run: python -m compileall -q scripts
+
+      - name: Sanity check constants and syntax
+        run: |
+          cd scripts
+          python -c "import common, itertools, pathlib; print('axis', common.AXIS_MIN, common.AXIS_DEFAULT, common.AXIS_MAX); print('instances', common.INSTANCE_WEIGHTS); print('sf ranges', len(common.SF_RANGES)); [compile(p.read_text(encoding='utf-8'), str(p), 'exec') for p in pathlib.Path('.').rglob('*.py')]; print('ok')"
+
+      - name: Check required docs are present
+        run: |
+          test -f README.md
+          test -f CHANGELOG.md
+          test -f THIRD-PARTY.md
+          test -f SOURCE_INDEX.md
+          test -f docs/release-notes.md
+          test -f "docs/构建与发版.md"
+
+      - name: Guard against accidentally committed font binaries
+        run: |
+          if git ls-files | grep -Ei '\.(ttf|otf|woff2?|mtz|zip)$'; then
+            echo "::error::font/theme binary tracked in git"; exit 1
+          fi
+          echo "no binaries tracked"
