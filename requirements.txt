@@ -1,0 +1,5 @@
+fonttools>=4.58
+brotli>=1.1
+zopfli>=0.2
+numpy>=2.0
+pillow>=10.0

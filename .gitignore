@@ -1,0 +1,20 @@
+# --- build inputs (Apple proprietary, never committed) ---
+src-pingfang/
+src-sfpro/
+
+# --- build intermediates and outputs ---
+work/
+dist/
+*.mtz
+
+# --- python ---
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# --- os / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
